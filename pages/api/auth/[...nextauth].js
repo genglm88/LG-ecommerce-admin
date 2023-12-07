@@ -6,12 +6,11 @@ import GoogleProvider from "next-auth/providers/google"
 import { Admin } from "@/models/Admin"
 
 const isAdmin = async (email) => {
-
   try {
-     await clientPromise
-     await NextAuth(authOptions)
-    //return !!(await Admin.findOne({ email: new RegExp(email, 'i')  }).maxTimeMS(40000))
-    return (await Admin.findOne({ email: { '$regex': email, $options: 'i' } }).maxTimeMS(40000))
+    await clientPromise
+    await NextAuth(authOptions)
+   const adminDoc = await Admin.findOne({ email: { $regex: email, $options: "i" } })
+   return adminDoc
   } catch (err) {
     console.error("Error checking admin status", err)
     return false
@@ -19,6 +18,7 @@ const isAdmin = async (email) => {
 }
 
 export const authOptions = {
+  secret: process.env.SECRET,
   providers: [
     // OAuth authentication providers...
     GoogleProvider({
@@ -53,13 +53,13 @@ export async function isAdminRequest(req, res) {
     }
 
     // continue processing for Admin
-   //res.status(200).json({ message: "Admin request sucessful" })
-   //res.end()
-  //return
-  //can't have any res. here, there are more res after Admin is coonfirmed
+    //res.status(200).json({ message: "Admin request sucessful" })
+    //res.end()
+    //return
+    //can't have any res. here, there are more res after Admin is coonfirmed
   } catch (err) {
     console.error("Error processing admin request: ", err)
-   //res.status(500).json({ error: "Internsal sever error" })
+    //res.status(500).json({ error: "Internsal sever error" })
     //res.end()
   }
   //res.end()
