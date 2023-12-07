@@ -4,11 +4,13 @@ import clientPromise from "../../../lib/mongodb"
 
 import GoogleProvider from "next-auth/providers/google"
 import { Admin } from "@/models/Admin"
+import mongooseConnect from "@/lib/mongoose"
 
 const isAdmin = async (email) => {
   try {
     await clientPromise
     await NextAuth(authOptions)
+    mongooseConnect()
    const adminDoc = await Admin.findOne({ email: { $regex: email, $options: "i" } })
    return adminDoc
   } catch (err) {
